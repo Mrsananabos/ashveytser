@@ -1,117 +1,149 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>Hello, world!</title>
+</head>
+<body>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<style>
+    td.true {
+        background: palegreen;
+    }
+    td.false {
+        background: #EC9883;
+    }
+</style>
 <script>
-    function validate() {
-        if (document.forms["form_id"]["fn"].value == '') {
-            alert("Please, fill in the 'First name' field");
-            return false;
-        }
-        if (document.forms["form_id"]["ln"].value == '') {
-            alert("Please, fill in the 'Last name' field");
-            return false;
-        }
-        if (document.forms["form_id"]["description"].value == '') {
-            alert("Please, fill in the 'Description' field");
-            return false;
-        }
 
+    $(document).ready(function () {
+       loadSizeTable();
+    });
+
+    function loadSizeTable() {
+        $.ajax({
+            url: "./info",
+            method: "get",
+            dataType: "json",
+            complete:
+                function (data) {
+                    var json = JSON.parse(data.responseText);
+                    var strPlace = json['place'];
+                    var nPlace = Number(strPlace);
+                    var strRow = json['row'];
+                    var nRow = Number(strRow);
+                    $('#trplace').empty();
+                    $('#trplace').append('<th style="width: 120px;">Ряд / Место</th>');
+                    for (var i = 1; i <= nPlace; i++) {
+                        $('#trplace').append(' <th>' + i + '</th>');
+                    };
+                    fillTable(nRow, nPlace);
+                    setTimeout("loadSizeTable()", 7000);
+
+                }
+        });
     }
 
-    function addRow() {
-        var fn = $('#fn').val();
-        var ln = $('#ln').val();
-        var sex = $('#sex').val();
-        var desc = $('#description').val();
 
-        $('#table tr:last').after('<tr><td>' + fn +'</td><td>' + ln +'</td><td>' + sex +'</td><td>' + desc +'</td></tr>');
+    function fillTable(nRow, nPlace) {
+        $.ajax({
+            url: "./info",
+            method: "post",
+            dataType: "json",
+            complete:
+                function (data) {
+                    var json = JSON.parse(data.responseText);
+                    var appendStr = createStrForAppend(nRow, nPlace, json);
+                    $('tbody').empty();
+                    $('tbody').append(appendStr);
+
+                }
+        });
     }
+
+    function createStrForAppend(nRow, nPlace, json) {
+        var result = '';
+        var numElOfJson = 0;
+        for (var r = 1; r <= nRow; r++) {
+            result +='<tr><th>' + r + '</th>';
+            for (var p = 1; p <= nPlace; p++) {
+                var isFree = json[numElOfJson]['isFree'];
+                result += '<td class="' + isFree +'"><input name="place" class="' + isFree + '" type="radio" cost="' + json[numElOfJson]['cost'] +'" row="' + json[numElOfJson]['row'] +'" place="' + json[numElOfJson]['place'] +'" value="' + json[numElOfJson]['id'] + '"> Ряд ' + r + ', Место ' + p + '</td>';
+                numElOfJson++;
+            }
+            result +='</tr>';
+        }
+        return result;
+    }
+
+
+    function validatePlace(idPlace, isFree) {
+        var rsl = true;
+        if (idPlace == undefined) {
+            alert('Please, select row and place');
+            rsl = false;
+        }
+        if (isFree == 'false') {
+            alert('Sorry, this place is already booked');
+            rsl = false;
+        }
+
+        return rsl;
+    }
+    
+    function bookPlace() {
+        var idPlace = $("tbody input[type='radio']:checked").val();
+        var isFree = $("tbody input[type='radio']:checked").attr('class');
+        var cost = $("tbody input[type='radio']:checked").attr('cost');
+        var row = $("tbody input[type='radio']:checked").attr('row');
+        var place = $("tbody input[type='radio']:checked").attr('place');
+        if (validatePlace(idPlace, isFree)) {
+            window.location.href = "http://localhost:8080/chapter_007/book.html?id="+idPlace+'&cost='+cost+'&row='+row+'&place='+place;
+        }
+    }
+
 
 
 
 </script>
-<head>
-    <title>Bootstrap Example</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-</head>
-<body>
-<div class="container-fluid">
-    <h2 style="text-align: center">My First Bootstrap Page</h2>
-</div>
-<form class="form-horizontal" id="form_id">
-<div class="form-group">
-    <label class="control-label col-sm-2" for="fn">First name:</label>
-    <div class="col-sm-8">
-    <input type="text" class="form-control" id="fn">
-    </div>
-</div>
-<div class="form-group">
-    <label class="control-label col-sm-2" for="ln">Last name:</label>
-    <div class="col-sm-8">
-    <input type="text" class="form-control" id="ln">
-    </div>
-</div>
-<div class="form-group">
-    <label class="control-label col-sm-2" for="sex">Sex:</label>
-        <div class="col-sm-8">
-        <select name="sex" class="form-control" id="sex">
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-        </select>
-        </div>
-</div>
-<div class="form-group">
-    <div class="col-sm-15">
-    <label class="control-label col-sm-3" for="description">Description:</label>
-        <textarea rows="5" cols="100" id="description"></textarea>
-    </div>
-</div>
-
-    <div style="text-align: right" class="form-group">
-        <div class="col-sm-offset-2 col-sm-8">
-            <button type="submit" class="btn btn-default" onclick="return validate();">Submit</button>
-        </div>
-    </div>
-</form>
-
 <div class="container">
-    <h3 style="text-align: center">The Table-striped class adds zebra-stripes to a table</h3>
-    <table class="table table-striped" id='table'>
-        <thead>
-        <tr>
-            <th>Firstname</th>
-            <th>Lastname</th>
-            <th>Sex</th>
-            <th>Description</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>Elena</td>
-            <td>Smirnova</td>
-            <td>Female</td>
-            <td>teacher</td>
-
-        </tr>
-        <tr>
-            <td>Ivan</td>
-            <td>Plehanov</td>
-            <td>Male</td>
-            <td>doctor</td>
-        </tr>
-        <tr>
-            <td>Oleg</td>
-            <td>Tennikov</td>
-            <td>Male</td>
-            <td>engineer</td>
-        </tr>
-        </tbody>
-    </table> 
-    <button style="margin-left: 83%" type="submit" onclick="addRow();">Add row</button>
+    <div class="row pt-3">
+        <h4>
+            Бронирование месте на сеанс
+        </h4>
+        <table class="table table-bordered" id="table">
+            <thead>
+            <tr id="trplace">
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div class="row float-right">
+        <button type="button" class="btn btn-success" onclick="bookPlace()">Оплатить</button>
+    </div>
 </div>
+<div id="exp">
 
+</div>
 </body>
 </html>

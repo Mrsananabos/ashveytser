@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>Hello, world!</title>
+</head>
+<body>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script>
+    
+    var id;
+
+    function getUrlParameter(sParam) {
+        var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : sParameterName[1];
+            }
+        }
+    };
+
+    $(function () {
+        var url = document.location.href;
+        id = getUrlParameter('id');
+        var cost = getUrlParameter('cost');
+        var row = getUrlParameter('row');
+        var place = getUrlParameter('place');
+        $('#costTicket').append('Вы выбрали ряд ' + row + ' место ' + place + ', Сумма : ' + cost + ' рублей.')
+    });
+    
+    function validate(username, phone) {
+        var rsl = true;
+        if (username = '') {
+            alert('Please fill username field');
+            rsl = false;
+        }
+        if (phone = '') {
+            alert('Please fill phone field');
+            rsl = false;
+        }
+        return rsl;
+    }
+
+    function book() {
+
+        var username = $('#username').val();
+        var phone = $('#phone').val();
+        if (validate(username, phone)) {
+            var reserve = createPlaceReservation(id, username, phone);
+            sendToController(reserve);
+        }
+    }
+
+    function createPlaceReservation(id, username, phone) {
+        return {
+            username: username,
+            phone: phone,
+            idPlace: id
+        };
+    }
+    
+    function sendToController(reserve) {
+        $.ajax({
+            url: "./cinema",
+            method: "post",
+            dataType: "json",
+            data: JSON.stringify(reserve),
+            complete: function (data) {
+                var json = JSON.parse(data.responseText);
+                if (json['success'] == true) {
+                    $('#success').text("The transaction was successful");
+                } else {
+                    if (json['success'] == false) {
+                        $('#success').text("The transaction failed");
+                    }
+                }
+
+            }
+        });
+    }
+
+    function back() {
+        window.location.href = "http://localhost:8080/chapter_007/index.html";
+    }
+
+</script>
+<div class="container">
+    <div class="row pt-3">
+        <h3 id="costTicket">
+        </h3>
+    </div>
+    <div class="row">
+        <form>
+            <div class="form-group">
+                <label for="username">ФИО</label>
+                <input type="text" class="form-control" id="username" placeholder="ФИО">
+            </div>
+            <div class="form-group">
+                <label for="phone">Номер телефона</label>
+                <input type="text" class="form-control" id="phone" placeholder="Номер телефона">
+            </div>
+            <button type="button" class="btn btn-success" onclick="book()">Оплатить</button>
+            <button type="button" class="btn btn-success" onclick="back()">Назад</button><br>
+            <div id="success"></div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

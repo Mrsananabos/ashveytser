@@ -30,6 +30,26 @@ public class Person {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Person person = (Person) o;
+
+        if (idPlace != person.idPlace) return false;
+        if (username != null ? !username.equals(person.username) : person.username != null) return false;
+        return phone != null ? phone.equals(person.phone) : person.phone == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = username != null ? username.hashCode() : 0;
+        result = 31 * result + (phone != null ? phone.hashCode() : 0);
+        result = 31 * result + idPlace;
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "Person{" +
                 "username='" + username + '\'' +

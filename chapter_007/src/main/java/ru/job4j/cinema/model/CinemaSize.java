@@ -26,6 +26,24 @@ public class CinemaSize {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CinemaSize that = (CinemaSize) o;
+
+        if (row != that.row) return false;
+        return place == that.place;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = row;
+        result = 31 * result + place;
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "CinemaSize{" +
                 "row=" + row +
