@@ -25,24 +25,20 @@
         crossorigin="anonymous"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 <script>
-    
-    var id;
 
+    var id;
     function getUrlParameter(sParam) {
         var sPageURL = decodeURIComponent(window.location.search.substring(1)),
             sURLVariables = sPageURL.split('&'),
             sParameterName,
             i;
-
         for (i = 0; i < sURLVariables.length; i++) {
             sParameterName = sURLVariables[i].split('=');
-
             if (sParameterName[0] === sParam) {
                 return sParameterName[1] === undefined ? true : sParameterName[1];
             }
         }
     };
-
     $(function () {
         var url = document.location.href;
         id = getUrlParameter('id');
@@ -51,7 +47,7 @@
         var place = getUrlParameter('place');
         $('#costTicket').append('Вы выбрали ряд ' + row + ' место ' + place + ', Сумма : ' + cost + ' рублей.')
     });
-    
+
     function validate(username, phone) {
         var rsl = true;
         if (username = '') {
@@ -64,9 +60,7 @@
         }
         return rsl;
     }
-
     function book() {
-
         var username = $('#username').val();
         var phone = $('#phone').val();
         if (validate(username, phone)) {
@@ -74,7 +68,6 @@
             sendToController(reserve);
         }
     }
-
     function createPlaceReservation(id, username, phone) {
         return {
             username: username,
@@ -82,7 +75,7 @@
             idPlace: id
         };
     }
-    
+
     function sendToController(reserve) {
         $.ajax({
             url: "./cinema",
@@ -98,15 +91,12 @@
                         $('#success').text("The transaction failed");
                     }
                 }
-
             }
         });
     }
-
     function back() {
         window.location.href = "http://localhost:8080/chapter_007/index.html";
     }
-
 </script>
 <div class="container">
     <div class="row pt-3">

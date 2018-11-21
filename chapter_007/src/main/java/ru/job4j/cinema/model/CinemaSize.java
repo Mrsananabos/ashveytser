@@ -43,6 +43,7 @@ public class CinemaSize {
         return result;
     }
 
+
     @Override
     public String toString() {
         return "CinemaSize{" +

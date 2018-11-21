@@ -33,11 +33,9 @@
     }
 </style>
 <script>
-
     $(document).ready(function () {
-       loadSizeTable();
+        loadSizeTable();
     });
-
     function loadSizeTable() {
         $.ajax({
             url: "./info",
@@ -57,12 +55,9 @@
                     };
                     fillTable(nRow, nPlace);
                     setTimeout("loadSizeTable()", 7000);
-
                 }
         });
     }
-
-
     function fillTable(nRow, nPlace) {
         $.ajax({
             url: "./info",
@@ -74,11 +69,9 @@
                     var appendStr = createStrForAppend(nRow, nPlace, json);
                     $('tbody').empty();
                     $('tbody').append(appendStr);
-
                 }
         });
     }
-
     function createStrForAppend(nRow, nPlace, json) {
         var result = '';
         var numElOfJson = 0;
@@ -93,8 +86,6 @@
         }
         return result;
     }
-
-
     function validatePlace(idPlace, isFree) {
         var rsl = true;
         if (idPlace == undefined) {
@@ -105,10 +96,9 @@
             alert('Sorry, this place is already booked');
             rsl = false;
         }
-
         return rsl;
     }
-    
+
     function bookPlace() {
         var idPlace = $("tbody input[type='radio']:checked").val();
         var isFree = $("tbody input[type='radio']:checked").attr('class');
@@ -119,10 +109,6 @@
             window.location.href = "http://localhost:8080/chapter_007/book.html?id="+idPlace+'&cost='+cost+'&row='+row+'&place='+place;
         }
     }
-
-
-
-
 </script>
 <div class="container">
     <div class="row pt-3">
